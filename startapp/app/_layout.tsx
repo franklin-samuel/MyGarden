@@ -6,6 +6,7 @@ export default function Layout() {
     return(
         <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="searchScreen" options={{ headerShown: false }}/>
         </Stack>
     )
 }

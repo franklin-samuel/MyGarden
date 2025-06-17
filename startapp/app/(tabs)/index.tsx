@@ -1,9 +1,13 @@
 import React from 'react';
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router'
 
 const primaryColor = '#7AB865'
 
+
 export default function HomeScreen() {
+    const router = useRouter()
+
     return(
         <View style={styles.main}>
             <View style={styles.head}>
@@ -15,7 +19,7 @@ export default function HomeScreen() {
                 <View style={styles.base}>
                     <Text style={styles.h1center}>Vamos começar</Text>
                     <Text style={styles.h2center}>Lembre de regar suas plantas diariamente!</Text>
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={() => router.push('/searchScreen')}>
                         <Text style={styles.buttonText}>+ Adicionar planta</Text>
                     </TouchableOpacity>
                 </View>
