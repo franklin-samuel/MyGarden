@@ -8,10 +8,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { searchPlants, Plant } from '../services/perenual';
 import { useUserPlants } from './context/plantsContext';
+import LottieView from 'lottie-react-native';
 
 function normalizeToString(value: string | string[] | null | undefined): string {
   if (!value) return '';
@@ -27,8 +29,10 @@ export default function SearchScreen() {
   const [filteredResults, setFilteredResults] = useState<Plant[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false); // controle do modal de animação
 
   const router = useRouter();
+  const { addPlant } = useUserPlants();
 
   useEffect(() => {
     const timer = setTimeout(async () => {
@@ -61,35 +65,58 @@ export default function SearchScreen() {
     }
 
     const q = query.toLowerCase();
-    const filtered = allResults.filter((plant) => {
-      const common = normalizeToString(plant.common_name);
-      const scientific = normalizeToString(plant.scientific_name);
-      const other = normalizeToString(plant.other_name);
+    const filtered = allResults
+      .filter((plant) => {
+        const common = normalizeToString(plant.common_name);
+        const scientific = normalizeToString(plant.scientific_name);
+        const other = normalizeToString(plant.other_name);
 
-      return (
-        common.includes(q) ||
-        scientific.includes(q) ||
-        other.includes(q) ||
-        plant.id.toString() === q
-      );
-    });
+        return (
+          common.includes(q) ||
+          scientific.includes(q) ||
+          other.includes(q) ||
+          plant.id.toString() === q
+        );
+      })
+      .filter((plant) => {
+        const uri = plant?.default_image?.thumbnail;
+        return !!uri && uri.trim() !== '';
+      });
 
     setFilteredResults(filtered);
   }, [query, allResults]);
+
+  function handleAddPlant(plant: Plant) {
+    console.log('Adicionando planta:', plant);
+    addPlant(plant);
+    setShowSuccess(true);
+
+    setTimeout(() => {
+      setShowSuccess(false);
+      router.replace('/');
+    }, 1600);
+  }
 
   function cancelSearch() {
     router.replace('/');
   }
 
-  const { addPlant } = useUserPlants();
-
-  function handleAddPlant(plant: Plant) {
-    console.log('Adicionando planta:', plant);
-    addPlant(plant);
-  }
-
   return (
     <View style={styles.wholePage}>
+      <Modal visible={showSuccess} transparent animationType="fade">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <LottieView
+              source={require('../assets/animations/Animation - 1749587417177.json')}
+              autoPlay
+              loop={false}
+              style={{ width: 150, height: 150 }}
+            />
+            <Text style={styles.successText}>Planta adicionada!</Text>
+          </View>
+        </View>
+      </Modal>
+
       <View style={styles.hed}>
         <View style={styles.searchBox}>
           <Image
@@ -240,7 +267,8 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 45,
+    marginTop: 40,
+    height: '10%',
   },
   cancelView: {
     alignItems: 'center',
@@ -258,5 +286,24 @@ const styles = StyleSheet.create({
     color: '#6FAA5F',
     fontSize: 16,
     fontWeight: '500',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 30,
+    borderRadius: 16,
+    alignItems: 'center',
+    elevation: 10,
+  },
+  successText: {
+    marginTop: 12,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#4CAF50',
   },
 });

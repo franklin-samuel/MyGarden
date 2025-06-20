@@ -15,7 +15,7 @@ export interface Plant {
   };
 }
 
-const API_KEY = 'sk-u8tW6851c01a730d311052';
+const API_KEY = 'sk-kkjK6855b5dd9d00211100';
 const BASE_URL = 'https://perenual.com/api/v2';
 
 export const api = axios.create({

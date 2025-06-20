@@ -1,21 +1,28 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { Image } from 'react-native';
+import colors from '../../constants/colors';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: true,
-        headerTintColor: '#fff',
+        headerTintColor: colors.textPrimary,
         headerStyle: {
-          backgroundColor: '#7AB865',
+          backgroundColor: colors.primary,
         },
         headerTitleStyle: {
           fontWeight: 'bold',
         },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
-          borderTopColor: '#CCC',
+          backgroundColor: colors.card,
+          borderTopColor: colors.border,
+          height: 80,
+          paddingBottom: 6,
+          paddingTop: 4,
         },
       }}
     >
@@ -23,7 +30,6 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Lembrete',
-          tabBarActiveTintColor: '#7AB865',
           headerShown: false,
           tabBarIcon: ({ focused, color, size }) => (
             <Image
@@ -31,8 +37,7 @@ export default function TabLayout() {
               style={{
                 width: size ?? 24,
                 height: size ?? 24,
-                tintColor: focused ? '#7AB865' : '#888',
-                alignSelf: 'center',
+                tintColor: focused ? colors.primary : colors.textSecondary,
               }}
               resizeMode="contain"
             />
@@ -44,7 +49,6 @@ export default function TabLayout() {
         name="myPlants"
         options={{
           title: 'Suas plantas',
-          tabBarActiveTintColor: '#7AB865',
           headerShown: false,
           tabBarIcon: ({ focused, color, size }) => (
             <Image
@@ -52,8 +56,7 @@ export default function TabLayout() {
               style={{
                 width: size ?? 24,
                 height: size ?? 24,
-                tintColor: focused ? '#7AB865' : '#888',
-                alignSelf: 'center',
+                tintColor: focused ? colors.primary : colors.textSecondary,
               }}
               resizeMode="contain"
             />
@@ -65,7 +68,6 @@ export default function TabLayout() {
         name="searchScreen"
         options={{
           title: 'Pesquisar',
-          tabBarActiveTintColor: '#7AB865',
           headerShown: false,
           tabBarIcon: ({ focused, color, size }) => (
             <Image
@@ -73,8 +75,7 @@ export default function TabLayout() {
               style={{
                 width: size ?? 24,
                 height: size ?? 24,
-                tintColor: focused ? '#7AB865' : '#888',
-                alignSelf: 'center',
+                tintColor: focused ? colors.primary : colors.textSecondary,
               }}
               resizeMode="contain"
             />
@@ -82,6 +83,5 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-
   );
 }
