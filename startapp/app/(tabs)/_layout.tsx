@@ -60,6 +60,27 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="searchScreen"
+        options={{
+          title: 'Pesquisar',
+          tabBarActiveTintColor: '#7AB865',
+          headerShown: false,
+          tabBarIcon: ({ focused, color, size }) => (
+            <Image
+              source={require('../../assets/images/search.png')}
+              style={{
+                width: size ?? 24,
+                height: size ?? 24,
+                tintColor: focused ? '#7AB865' : '#888',
+                alignSelf: 'center',
+              }}
+              resizeMode="contain"
+            />
+          ),
+        }}
+      />
     </Tabs>
 
   );

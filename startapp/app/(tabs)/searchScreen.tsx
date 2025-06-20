@@ -10,8 +10,8 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { searchPlants, Plant } from '../services/perenual';
-import { useUserPlants } from './context/plantsContext';
+import { searchPlants, Plant } from '../../services/perenual';
+import { useUserPlants } from './../context/plantsContext';
 
 function normalizeToString(value: string | string[] | null | undefined): string {
   if (!value) return '';
@@ -33,7 +33,7 @@ export default function SearchScreen() {
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (query.trim() !== '') {
-        setLoading(true);
+        setLoading(true); 
         try {
           const data = await searchPlants(query.trim());
           setAllResults(data);
@@ -41,13 +41,13 @@ export default function SearchScreen() {
         } catch (err) {
           console.error(err);
         } finally {
-          setLoading(false);
+          setLoading(false); 
         }
       } else {
         setAllResults([]);
         setFilteredResults([]);
         setSearched(false);
-        setLoading(false);
+        setLoading(false); 
       }
     }, 500);
 
@@ -93,7 +93,7 @@ export default function SearchScreen() {
       <View style={styles.hed}>
         <View style={styles.searchBox}>
           <Image
-            source={require('../assets/images/search.png')}
+            source={require('../../assets/images/search.png')}
             style={styles.lupa}
           />
           <TextInput
@@ -140,7 +140,7 @@ export default function SearchScreen() {
                         source={
                           hasImage
                             ? { uri: imageUri }
-                            : require('../assets/plantImages/default.jpg')
+                            : require('../../assets/plantImages/default.jpg')
                         }
                         style={styles.imgPlant}
                         resizeMode="cover"
