@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Modal,
   Keyboard,
+  Platform,
   TouchableWithoutFeedback
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -121,28 +122,32 @@ export default function SearchScreen() {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.wholePage}>
-        <Modal visible={showSuccess} transparent animationType="fade">
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <LottieView
-                source={require('../assets/animations/Animation - 1749587417177.json')}
-                autoPlay
-                loop={false}
-                style={{ width: 150, height: 150 }}
-              />
-              <Text style={styles.successText}>Planta adicionada!</Text>
-            </View>
-          </View>
-        </Modal>
-
-        <View style={styles.hed}>
-          <View style={styles.searchBox}>
-            <Image
-              source={require('../assets/images/search.png')}
-              style={styles.lupa}
+    <View style={styles.wholePage}>
+      <Modal visible={showSuccess} transparent animationType="fade">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <LottieView
+              source={require('../assets/animations/Animation - 1749587417177.json')}
+              autoPlay
+              loop={false}
+              style={{ width: 150, height: 150 }}
             />
+            <Text style={styles.successText}>Planta adicionada!</Text>
+          </View>
+        </View>
+      </Modal>
+
+      <View style={styles.hed}>
+        <View style={styles.searchBox}>
+          <Image
+            source={require('../assets/images/search.png')}
+            style={styles.lupa}
+          />
+          <TouchableWithoutFeedback
+            onPress={() => {
+              if (Platform.OS !== 'web') Keyboard.dismiss();
+            }}
+          >
             <TextInput
               placeholder="Pesquisar"
               placeholderTextColor={colors.textSecondary}
@@ -151,73 +156,73 @@ export default function SearchScreen() {
               style={styles.inputBox}
               returnKeyType="search"
             />
-          </View>
-          <TouchableOpacity onPress={cancelSearch} style={styles.cancelView}>
-            <Text style={styles.cancelBtn}>Cancelar</Text>
-          </TouchableOpacity>
+          </TouchableWithoutFeedback>
         </View>
-
-        <View style={styles.resultsArea}>
-          {loading ? (
-            <View style={styles.loaderContainer}>
-              <ActivityIndicator size="large" color={colors.primary} />
-              <Text style={styles.loadingText}>Buscando plantas...</Text>
-            </View>
-          ) : query.trim().length === 0 && !searched ? (
-            <Text style={styles.noPlantText}>
-              Pesquise pelo nome comum ou científico
-            </Text>
-          ) : normalizeToString(query).length < 3 ? (
-            <Text style={styles.noPlantText}>
-              Digite ao menos 3 letras
-            </Text>
-          ) : filteredResults.length > 0 ? (
-            <FlatList
-              data={filteredResults}
-              keyExtractor={(item) => item.id.toString()}
-              contentContainerStyle={{ paddingBottom: 30 }}
-              renderItem={({ item }) => {
-                const imageUri = item?.default_image?.thumbnail;
-                const hasImage = imageUri && imageUri.trim() !== '';
-
-                return (
-                  <View style={styles.resultItem}>
-                    <TouchableOpacity
-                      style={styles.resultInfo}
-                      onPress={() =>
-                        router.push({
-                          pathname: `/plants/[id]`,
-                          params: { id: item.id.toString() },
-                        })
-                      }
-                    >
-                      <Image
-                        source={
-                          hasImage
-                            ? { uri: imageUri }
-                            : require('../assets/plantImages/default.jpg')
-                        }
-                        style={styles.imgPlant}
-                        resizeMode="cover"
-                      />
-                      <Text style={styles.textName}>
-                        {normalizeToString(item.common_name) || 'Sem nome'}
-                      </Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => handleAddPlant(item)}>
-                      <Text style={styles.btnAdd}>+ Adicionar</Text>
-                    </TouchableOpacity>
-                  </View>
-                );
-              }}
-            />
-          ) : searched ? (
-            <Text style={styles.noPlantText}>Nenhuma planta encontrada</Text>
-          ) : null}
-        </View>
+        <TouchableOpacity onPress={cancelSearch} style={styles.cancelView}>
+          <Text style={styles.cancelBtn}>Cancelar</Text>
+        </TouchableOpacity>
       </View>
-    </TouchableWithoutFeedback>
+
+      <View style={styles.resultsArea}>
+        {loading ? (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.loadingText}>Buscando plantas...</Text>
+          </View>
+        ) : query.trim().length === 0 && !searched ? (
+          <Text style={styles.noPlantText}>
+            Pesquise pelo nome comum ou científico
+          </Text>
+        ) : normalizeToString(query).length < 3 ? (
+          <Text style={styles.noPlantText}>Digite ao menos 3 letras</Text>
+        ) : filteredResults.length > 0 ? (
+          <FlatList
+            data={filteredResults}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ paddingBottom: 30 }}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            renderItem={({ item }) => {
+              const imageUri = item?.default_image?.thumbnail;
+              const hasImage = imageUri && imageUri.trim() !== '';
+
+              return (
+                <View style={styles.resultItem}>
+                  <TouchableOpacity
+                    style={styles.resultInfo}
+                    onPress={() =>
+                      router.push({
+                        pathname: `/plants/[id]`,
+                        params: { id: item.id.toString() },
+                      })
+                    }
+                  >
+                    <Image
+                      source={
+                        hasImage
+                          ? { uri: imageUri }
+                          : require('../assets/plantImages/default.jpg')
+                      }
+                      style={styles.imgPlant}
+                      resizeMode="cover"
+                    />
+                    <Text style={styles.textName}>
+                      {normalizeToString(item.common_name) || 'Sem nome'}
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={() => handleAddPlant(item)}>
+                    <Text style={styles.btnAdd}>+ Adicionar</Text>
+                  </TouchableOpacity>
+                </View>
+              );
+            }}
+          />
+        ) : searched ? (
+          <Text style={styles.noPlantText}>Nenhuma planta encontrada</Text>
+        ) : null}
+      </View>
+    </View>
   );
 }
 

@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   // tela com plantas
   mainPlants: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
     paddingTop: 60,
     alignItems: 'center'
   },
@@ -136,10 +136,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
-    color: '#333',
+    color: colors.textPrimary,
   },
   plantCard: {
-    backgroundColor: '#F9F9F9',
+    backgroundColor: colors.card,
     borderRadius: 15,
     marginRight: 16,
     width: 220,
@@ -168,12 +168,12 @@ const styles = StyleSheet.create({
   planth1Card: {
     fontWeight: '600',
     fontSize: 17,
-    color: '#333',
+    color: colors.textPrimary,
     textAlign: 'center',
     marginBottom: 8,
   },
   waterButton: {
-    backgroundColor: '#6FAA5F',
+    backgroundColor: colors.primary,
     borderRadius: 100,
     width: 70,
     height: 70,
@@ -183,9 +183,9 @@ const styles = StyleSheet.create({
 
   },
   waterButtonText: {
-    color: '#fff',
+    color: colors.textPrimary,
     fontWeight: '600',
-    fontSize: 37
+    fontSize: 37,
   },
   floatingButton: {
     position: 'absolute',
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     elevation: 12,
   },
   floatingButtonText: {
-    color: '#fff',
+    color: colors.textPrimary,
     fontWeight: 'bold',
     fontSize: 16,
   },
