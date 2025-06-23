@@ -1,68 +1,124 @@
-import React from 'react';
-import { Text, View, TouchableOpacity, StyleSheet, FlatList, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+  Image,
+  Platform
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { useUserPlants } from '../context/plantsContext';
 import colors from '../../constants/colors';
+import { Plant } from '@/services/perenual';
+import { registerForPushNotificationsAsync,  } from '@/utils/notificationHelper';
+import ReminderModal from '../../components/reminderModal'
+
 
 export default function HomeScreen() {
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((granted) => {
+      if (granted) {
+        console.log('Permissão concedida!');
+      } else {
+        console.log('Permissão negada.');
+      }
+    });
+  }, []);
+
   const { plants } = useUserPlants();
   const router = useRouter();
 
+  const [modalVisible, setModalVisible] = useState(true);
+  const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
+
   if (plants.length === 0) {
     return (
-      <View style={styles.main}>
-        <View style={styles.head}>
-          <Text style={styles.h1}>Lembrete</Text>
-          <Text style={styles.h2}>Cuide de cada uma de suas plantas</Text>
-        </View>
+      <>
+        <ReminderModal
+          visible={modalVisible}
+          onClose={() => setModalVisible(false)}
+          plant={selectedPlant}//erro aqui
+        />
 
-        <View style={styles.center}>
-          <View style={styles.base}>
-            <Text style={styles.h1center}>Vamos começar</Text>
-            <Text style={styles.h2center}>Lembre de regar suas plantas diariamente!</Text>
-            <TouchableOpacity style={styles.button} onPress={() => router.push('/searchScreen')}>
-              <Text style={styles.buttonText}>+ Adicionar planta</Text>
-            </TouchableOpacity>
+        <View style={styles.main}>
+          <View style={styles.head}>
+            <Text style={styles.h1}>Lembrete</Text>
+            <Text style={styles.h2}>Cuide de cada uma de suas plantas</Text>
+          </View>
+
+          <View style={styles.center}>
+            <View style={styles.base}>
+              <Text style={styles.h1center}>Vamos começar</Text>
+              <Text style={styles.h2center}>
+                Lembre de regar suas plantas diariamente!
+              </Text>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => router.push('/searchScreen')}
+              >
+                <Text style={styles.buttonText}>+ Adicionar planta</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      </>
     );
   }
 
   return (
-    <View style={styles.mainPlants}>
-      <Text style={styles.h1plant}>Minhas Plantas</Text>
-      <FlatList
-        data={plants}
-        keyExtractor={(item) => item.id.toString()}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30 }}
-        renderItem={({ item }) => {
-          const imageSource = item.default_image?.thumbnail
-            ? { uri: item.default_image.thumbnail }
-            : require('../../assets/plantImages/default.jpg');
-
-          return (
-            <View style={styles.plantCard}>
-              <Image source={imageSource} style={styles.plantImageCard} />
-              <View style={styles.informations}>
-                <Text style={styles.planth1Card}>{item.common_name || 'Nome desconhecido'}</Text>
-                <TouchableOpacity style={styles.waterButton}>
-                  <Text style={styles.waterButtonText}>+</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          );
-        }}
+    <>
+      <ReminderModal 
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        plant={selectedPlant}//erro aqui
       />
-      <TouchableOpacity style={styles.floatingButton} onPress={() => router.push('/searchScreen')}>
-        <Text style={styles.floatingButtonText}>+ Planta</Text>
-      </TouchableOpacity>
-    </View>
+
+      <View style={styles.mainPlants}>
+        <Text style={styles.h1plant}>Minhas Plantas</Text>
+        <FlatList
+          data={plants}
+          keyExtractor={(item) => item.id.toString()}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 30 }}
+          renderItem={({ item }) => {
+            const imageSource = item.default_image?.thumbnail
+              ? { uri: item.default_image.thumbnail }
+              : require('../../assets/plantImages/default.jpg');
+
+            return (
+              <View style={styles.plantCard}>
+                <Image source={imageSource} style={styles.plantImageCard} />
+                <View style={styles.informations}>
+                  <Text style={styles.planth1Card}>
+                    {item.common_name || 'Nome desconhecido'}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.waterButton}
+                    onPress={() => {
+                      setSelectedPlant(item);
+                      setModalVisible(true);
+                    }}
+                  >
+                    <Text style={styles.waterButtonText}>+</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            );
+          }}
+        />
+        <TouchableOpacity
+          style={styles.floatingButton}
+          onPress={() => router.push('/searchScreen')}
+        >
+          <Text style={styles.floatingButtonText}>+ Planta</Text>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 }
-
 const styles = StyleSheet.create({
   main: {
     flex: 1,
@@ -123,13 +179,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
-
-  // tela com plantas
   mainPlants: {
     flex: 1,
     backgroundColor: colors.background,
     paddingTop: 60,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   h1plant: {
     fontSize: 26,
@@ -151,7 +205,7 @@ const styles = StyleSheet.create({
     elevation: 6,
     borderWidth: 1,
     borderColor: '#E1E1E1',
-    marginTop: 150
+    marginTop: 150,
   },
   plantImageCard: {
     width: '100%',
@@ -178,9 +232,8 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     marginTop: 25,
-    justifyContent:'center',
+    justifyContent: 'center',
     alignItems: 'center',
-
   },
   waterButtonText: {
     color: colors.textPrimary,
@@ -202,4 +255,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+
 });
